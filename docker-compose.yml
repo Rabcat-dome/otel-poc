@@ -1,0 +1,54 @@
+version: "3"
+
+networks:
+  dev:
+    driver: bridge 
+
+services:
+  bot-console-app:
+    build:
+      context: ./BotConsoleApp
+      dockerfile: DockerfileConsole
+    container_name: bot-console-app
+    stdin_open: true
+    restart: always
+    depends_on:
+      - bot-postgres
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    networks:
+      - dev
+
+  bot-api:
+    build:
+      context: ./BotConsoleApp
+      dockerfile: DockerfileAPI
+    container_name: bot-api
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    restart: always
+    depends_on:
+      - bot-postgres
+    networks:
+      - dev
+
+  bot-postgres:
+    build:
+      context: ./Postgres
+      dockerfile: Dockerfile
+      target: db
+    image: db
+    container_name: bot-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=874521Aa@
+      - POSTGRES_DB=postgres
+    cpus: 0.1
+    restart: always
+    volumes:
+      - ./Postgres/data/:/var/lib/postgresql/data/
+    networks:
+      - dev
+

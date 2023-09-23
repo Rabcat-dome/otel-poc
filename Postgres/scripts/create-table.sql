@@ -1,0 +1,8 @@
+-- CREATE TABLE IF NOT EXISTS depositaccount (
+--     pk_deac int NOT NULL,
+-- 	depositdate date NULL,
+-- 	amountusd decimal NULL DEFAULT 0,
+-- 	amountbaht decimal NULL DEFAULT 0,
+-- 	fxrate decimal NULL DEFAULT 0,
+-- 	CONSTRAINT depositaccount_pk PRIMARY KEY (pk_deac)
+-- );
