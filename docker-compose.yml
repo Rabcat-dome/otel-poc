@@ -5,50 +5,39 @@ networks:
     driver: bridge 
 
 services:
-  bot-console-app:
+  web-api:
     build:
-      context: ./BotConsoleApp
-      dockerfile: DockerfileConsole
-    container_name: bot-console-app
-    stdin_open: true
+      context: ./otel.api
+      dockerfile: Dockerfile
+    container_name: web-api
+    ports:
+      - "3000:3000"
     restart: always
     depends_on:
-      - bot-postgres
+      - web-api-postgres
     volumes:
       - "/etc/timezone:/etc/timezone:ro"
       - "/etc/localtime:/etc/localtime:ro"
     networks:
       - dev
 
-  bot-api:
+  web-api-postgres:
     build:
-      context: ./BotConsoleApp
-      dockerfile: DockerfileAPI
-    container_name: bot-api
-    ports:
-      - "3000:3000"
-    stdin_open: true
-    restart: always
-    depends_on:
-      - bot-postgres
-    networks:
-      - dev
-
-  bot-postgres:
-    build:
-      context: ./Postgres
+      context: ./postgres
       dockerfile: Dockerfile
       target: db
     image: db
-    container_name: bot-postgres
+    container_name: web-api-postgres
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=874521Aa@
+      - POSTGRES_PASSWORD=874521Aa@#
       - POSTGRES_DB=postgres
-    cpus: 0.1
+    cpus: 0.2
     restart: always
     volumes:
-      - ./Postgres/data/:/var/lib/postgresql/data/
+      - ./postgres/data/:/var/lib/postgresql/data/
     networks:
       - dev
+
+  
 
