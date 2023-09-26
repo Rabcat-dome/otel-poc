@@ -5,13 +5,45 @@ networks:
     driver: bridge 
 
 services:
-  web-api:
+  web-api1:
     build:
-      context: ./otel.api
+      context: ./backend-dotnet7/otel.api1
       dockerfile: Dockerfile
-    container_name: web-api
+    container_name: web-api1
     ports:
       - "3000:3000"
+    restart: always
+    depends_on:
+      - web-api-postgres
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    networks:
+      - dev
+  
+  web-api2:
+    build:
+      context: ./backend-dotnet7/otel.api2
+      dockerfile: Dockerfile
+    container_name: web-api2
+    ports:
+      - "3001:3001"
+    restart: always
+    depends_on:
+      - web-api-postgres
+    volumes:
+      - "/etc/timezone:/etc/timezone:ro"
+      - "/etc/localtime:/etc/localtime:ro"
+    networks:
+      - dev
+  
+  web-api3:
+    build:
+      context: ./backend-dotnet7/otel.api3
+      dockerfile: Dockerfile
+    container_name: web-api3
+    ports:
+      - "3002:3002"
     restart: always
     depends_on:
       - web-api-postgres
