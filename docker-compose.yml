@@ -7,14 +7,14 @@ networks:
 services:
   web-api1:
     build:
-      context: ./backend-dotnet7/otel.api1
-      dockerfile: Dockerfile
+      context: ./backend-dotnet7
+      dockerfile: otel.api1/Dockerfile
     container_name: web-api1
     ports:
-      - "3000:3000"
+      - "3000:80"
     restart: always
     depends_on:
-      - web-api-postgres
+      - db-postgres
     volumes:
       - "/etc/timezone:/etc/timezone:ro"
       - "/etc/localtime:/etc/localtime:ro"
@@ -23,14 +23,14 @@ services:
   
   web-api2:
     build:
-      context: ./backend-dotnet7/otel.api2
-      dockerfile: Dockerfile
+      context: ./backend-dotnet7
+      dockerfile: otel.api2/Dockerfile
     container_name: web-api2
     ports:
-      - "3001:3001"
+      - "3001:80"
     restart: always
     depends_on:
-      - web-api-postgres
+      - db-postgres
     volumes:
       - "/etc/timezone:/etc/timezone:ro"
       - "/etc/localtime:/etc/localtime:ro"
@@ -39,27 +39,27 @@ services:
   
   web-api3:
     build:
-      context: ./backend-dotnet7/otel.api3
-      dockerfile: Dockerfile
+      context: ./backend-dotnet7
+      dockerfile: otel.api3/Dockerfile
     container_name: web-api3
     ports:
-      - "3002:3002"
+      - "3002:80"
     restart: always
     depends_on:
-      - web-api-postgres
+      - db-postgres
     volumes:
       - "/etc/timezone:/etc/timezone:ro"
       - "/etc/localtime:/etc/localtime:ro"
     networks:
       - dev
 
-  web-api-postgres:
+  db-postgres:
     build:
       context: ./postgres
       dockerfile: Dockerfile
       target: db
     image: db
-    container_name: web-api-postgres
+    container_name: db-postgres
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=874521Aa@#
@@ -71,5 +71,15 @@ services:
     networks:
       - dev
 
+  web-frontend-react:
+    build:
+      context: ./frontend-react
+      dockerfile: Dockerfile
+    container_name: web-frontend-react
+    ports:
+      - "8080:8080"
+    restart: always
+    networks:
+      - dev
   
 
