@@ -1,11 +1,8 @@
-
-using System.Diagnostics;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using otel.models;
 
-namespace otel.api
+namespace otel.api1
 {
     public class Program
     {
@@ -24,7 +21,7 @@ namespace otel.api
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            
+
             builder.Services.AddOpenTelemetry()
                 .WithTracing(b =>
                 {
@@ -51,7 +48,7 @@ namespace otel.api
                      {
                          options.Endpoint = new Uri("http://host.docker.internal:4317"
                                                     ?? throw new InvalidOperationException());
-                     });
+                     }).AddHttpClientInstrumentation();
                 })
                 .WithMetrics(m =>
                 {
@@ -61,7 +58,7 @@ namespace otel.api
                             options.Endpoint = new Uri("http://host.docker.internal:4317"
                                                        ?? throw new InvalidOperationException());
                         });
-        });
+                });
 
             var app = builder.Build();
 

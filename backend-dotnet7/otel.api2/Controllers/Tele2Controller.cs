@@ -1,35 +1,37 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using otel.api;
 using otel.models;
+using System.Diagnostics;
+using System.Net.Http;
 
-namespace otel.api1.Controllers
+namespace otel.api2.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class TeleController : ControllerBase
+    public class Tele2Controller : ControllerBase
     {
         private static readonly string[] Summaries = new[]
         {
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
+    };
 
-        private readonly ILogger<TeleController> _logger;
+        private readonly ILogger<Tele2Controller> _logger;
 
-        public TeleController(ILogger<TeleController> logger)
+        public Tele2Controller(ILogger<Tele2Controller> logger)
         {
             _logger = logger;
         }
 
-        [HttpGet(Name = "GetAPI1")]
+        [HttpGet(Name = "GetAPI2")]
         public async Task<IEnumerable<WeatherForecast>> Get()
         {
-            using var myActivity = Telemetry.MyActivitySource1.StartActivity("Get");
+            using var myActivity = Telemetry.MyActivitySource2.StartActivity("Get");
+
 
             try
             {
                 Thread.Sleep(200);
-                var result = await CallExternalFromApi1();
+                var result = await CallExternalFromApi2();
 
                 //no need to do it in real life!
                 myActivity?.AddEvent(new("http 200 Event before 1s"));
@@ -50,14 +52,14 @@ namespace otel.api1.Controllers
             }
         }
 
-        private async Task<IEnumerable<WeatherForecast>> CallExternalFromApi1()
+        private async Task<IEnumerable<WeatherForecast>> CallExternalFromApi2()
         {
-            using var innerFunctionApi1Activity = Telemetry.MyActivitySource1.StartActivity("CallExternalFromApi1");
+            using var innerFunctionApi1Activity = Telemetry.MyActivitySource2.StartActivity("CallExternalFromApi2");
             using HttpClient client = new();
 
             Thread.Sleep(500);
-            var response = await client.GetFromJsonAsync<IEnumerable<WeatherForecast>>("http://web-api2/Tele2");
-
+            var response = await client.GetFromJsonAsync<IEnumerable<WeatherForecast>>("http://web-api3/Tele3");
+            
             return response ?? new List<WeatherForecast>();
         }
     }

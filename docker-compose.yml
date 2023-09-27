@@ -11,7 +11,7 @@ services:
       dockerfile: otel.api1/Dockerfile
     container_name: web-api1
     ports:
-      - "3000:80"
+      - "3001:80"
     restart: always
     depends_on:
       - db-postgres
@@ -29,7 +29,7 @@ services:
       dockerfile: otel.api2/Dockerfile
     container_name: web-api2
     ports:
-      - "3001:80"
+      - "3002:80"
     restart: always
     depends_on:
       - db-postgres
@@ -45,7 +45,7 @@ services:
       dockerfile: otel.api3/Dockerfile
     container_name: web-api3
     ports:
-      - "3002:80"
+      - "3003:80"
     restart: always
     depends_on:
       - db-postgres
@@ -62,6 +62,8 @@ services:
       target: db
     image: db
     container_name: db-postgres
+    ports:
+      - "5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=874521Aa@#
