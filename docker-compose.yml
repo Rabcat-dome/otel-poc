@@ -63,7 +63,7 @@ services:
     image: db
     container_name: db-postgres
     ports:
-      - "5432"
+      - "5432:5432"
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=874521Aa@#

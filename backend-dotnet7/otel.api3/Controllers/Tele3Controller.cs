@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using otel.api;
 using otel.models;
+using otel.models.EF;
 using System.Diagnostics;
 
 namespace otel.api3.Controllers
@@ -11,14 +12,16 @@ namespace otel.api3.Controllers
     {
         private static readonly string[] Summaries = new[]
         {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
+            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+        };
 
+        private readonly AppDb _db;
         private readonly ILogger<Tele3Controller> _logger;
 
-        public Tele3Controller(ILogger<Tele3Controller> logger)
+        public Tele3Controller(ILogger<Tele3Controller> logger, AppDb db)
         {
             _logger = logger;
+            _db = db;
         }
 
         [HttpGet(Name = "GetAPI3")]
@@ -55,16 +58,16 @@ namespace otel.api3.Controllers
         {
             using var innerFunctionApi1Activity = Telemetry.MyActivitySource3.StartActivity("InnerFunctionApi3");
 
-
-
             Thread.Sleep(200);
+            _db.TickerModels.Add(new TickerModel() {Price = DateTime.Now.Minute,AdjustPrice = DateTime.Now.Second});
+            _db.SaveChanges();
+            var count = _db.TickerModels.ToList().Count;
+            innerFunctionApi1Activity?.SetTag("operation.count", count);
+
             return Enumerable.Range(1, 5).Select(index =>
             {
-
-
-
                 //Set tags to an Activity
-                innerFunctionApi1Activity?.SetTag("operation.value", index);
+                innerFunctionApi1Activity?.SetTag("operation.value-"+index, index);
                 return new WeatherForecast
                 {
                     Date = DateOnly.FromDateTime(DateTime.Now.AddDays(index)),

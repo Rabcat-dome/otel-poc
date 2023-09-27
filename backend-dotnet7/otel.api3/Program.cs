@@ -1,6 +1,10 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Npgsql;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using otel.models.EF;
 
 namespace otel.api3
 {
@@ -12,11 +16,11 @@ namespace otel.api3
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
-            // Add services to the container.
+            builder.Services.AddDbContext<AppDb>(options =>
+                options.UseNpgsql(builder.Configuration["ConnectionStrings:AppDb"]));
+            builder.Services.AddScoped<DbContext, AppDb>();
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -46,7 +50,15 @@ namespace otel.api3
                         {
                             options.Endpoint = new Uri("http://host.docker.internal:4317"
                                                        ?? throw new InvalidOperationException());
-                        }).AddHttpClientInstrumentation();
+                        })
+                        .AddHttpClientInstrumentation()
+                        .AddSqlClientInstrumentation(options => {
+                            options.EnableConnectionLevelAttributes = true;
+                            options.SetDbStatementForStoredProcedure = true;
+                            options.SetDbStatementForText = true;
+                            options.RecordException = true;
+                            options.Enrich = (activity, x, y) => activity.SetTag("db.type", "sql");
+                        }).AddNpgsql();
                 })
                 .WithMetrics(m =>
                 {
