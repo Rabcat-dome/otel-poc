@@ -79,7 +79,7 @@ services:
       dockerfile: Dockerfile
     container_name: web-frontend-react
     ports:
-      - "8080:8080"
+      - "8081:8081"
     restart: always
     networks:
       - dev

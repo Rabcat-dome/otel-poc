@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using otel.api;
 
 namespace otel.api2.Controllers
 {

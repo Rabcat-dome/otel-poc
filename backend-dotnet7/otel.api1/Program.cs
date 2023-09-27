@@ -1,7 +1,9 @@
 
 using System.Diagnostics;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using otel.models;
 
 namespace otel.api
 {
@@ -12,7 +14,7 @@ namespace otel.api
 
         public static void Main(string[] args)
         {
-            
+
 
             var builder = WebApplication.CreateBuilder(args);
 
@@ -22,17 +24,44 @@ namespace otel.api
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            
             builder.Services.AddOpenTelemetry()
                 .WithTracing(b =>
                 {
-                    b
-                     .AddConsoleExporter()
-                     .AddSource(ServiceName)
+                    b.AddSource(ServiceName)
                      .ConfigureResource(resource =>
                          resource.AddService(
                              serviceName: ServiceName,
-                             serviceVersion: ServiceVersion));
-                });
+                             serviceVersion: ServiceVersion))
+                     .AddAspNetCoreInstrumentation(o =>
+                     {
+                         o.EnrichWithHttpRequest = (activity, httpRequest) =>
+                         {
+                             activity.SetTag("requestProtocol", httpRequest.Protocol);
+                         };
+                         o.EnrichWithHttpResponse = (activity, httpResponse) =>
+                         {
+                             activity.SetTag("responseLength", httpResponse.ContentLength);
+                         };
+                         o.EnrichWithException = (activity, exception) =>
+                         {
+                             activity.SetTag("exceptionType", exception.GetType().ToString());
+                         };
+                     }).AddOtlpExporter(options =>
+                     {
+                         options.Endpoint = new Uri("http://host.docker.internal:4317"
+                                                    ?? throw new InvalidOperationException());
+                     });
+                })
+                .WithMetrics(m =>
+                {
+                    m.AddAspNetCoreInstrumentation()
+                        .AddOtlpExporter(options =>
+                        {
+                            options.Endpoint = new Uri("http://host.docker.internal:4317"
+                                                       ?? throw new InvalidOperationException());
+                        });
+        });
 
             var app = builder.Build();
 
