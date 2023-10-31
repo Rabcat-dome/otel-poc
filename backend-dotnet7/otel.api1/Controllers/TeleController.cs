@@ -24,6 +24,11 @@ namespace otel.api1.Controllers
         [HttpGet(Name = "GetAPI1")]
         public async Task<IEnumerable<WeatherForecast>> Get()
         {
+            foreach (var o in Request.Headers)
+            {
+                Console.WriteLine(o.Key + ": "+ o.Value);
+            }
+
             using var myActivity = Telemetry.MyActivitySource1.StartActivity("Get");
 
             try
