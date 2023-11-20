@@ -9,13 +9,34 @@ import "./App.css";
 
 function fetchAPI() {
   // param is a highlighted word from the user before it clicked the button
-  return fetch("http://localhost:3001/Tele").then(function(result){return result});
+  return fetch("http://localhost:3001/Tele")
+  .then(result => {
+    return result.json();
+  })
+  .then(function(data) {
+    // ทำการแปลงข้อมูล JSON เป็น string
+    return JSON.stringify(data);
+  })
+  ;
+}
+
+function fetchAPIProxy() {
+  // param is a highlighted word from the user before it clicked the button
+  return fetch("/api")
+  .then(result => {
+    return result.json();
+  })
+  .then(function(data) {
+    // ทำการแปลงข้อมูล JSON เป็น string
+    return JSON.stringify(data);
+  })
+  ;
 }
 
 function App() {
   const [count1, setCount1] = useState(0);
   const [count2, setCount2] = useState(0);
-  const [txt1, setTxt1] = useState("");
+  const [txt1, setTxt1] = useState("test");
 
   return (
     <>
@@ -29,18 +50,24 @@ function App() {
       </div>
       <h1>Vite + React3</h1>
       <div className="card">
-        <button onClick={() => {setCount1((count1) => count1 + 1)
+        <button onClick={() => {setCount1((count1) => count1 + 1);
         fetchAPI().then(result => {
-          setTxt1((result as string));
+          console.log(result);
+          setTxt1(result);
         });
         }}>
           call API {count1}
         </button>
-        <button onClick={() => setCount2((count2) => count2 + 1)}>
+        <button onClick={() => {setCount2((count2) => count2 + 1);
+        fetchAPIProxy().then(result => {
+          console.log(result);
+          setTxt1(result);
+        });
+        }}>
           Call API proxypass {count2}
         </button>
         <p>
-          <div>{txt1}</div>
+          {txt1}
         </p>
       </div>
       <p className="read-the-docs">
