@@ -5,7 +5,7 @@ import dotenv from 'dotenv'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-    const envFile = mode === 'development' ? '.env.development' : '.env.production';
+    const envFile = '.env';
     dotenv.config({ path: envFile });
     return {
         plugins: [react()],
@@ -20,12 +20,19 @@ export default defineConfig(({ mode }) => {
             },
         },
         server: {
-            proxy: {
-                '/api': {
-                    target: process.env.VITE_API_BASE_URL,
-                    changeOrigin: true,
-                },
-            },
+            // watch: {
+            //     usePolling: true,
+            //   },
+            // proxy: {
+            //     '/api': {
+            //         target: 'http://hos/Tele',
+            //         changeOrigin: true,
+            //         rewrite: (path) => path.replace(/^\/api/, ''),
+            //     },
+            // },
+            //host: true, //needed for the Docker Container port mapping to work
+            strictPort: true,
+            port: 8081
         },
     };
 })
