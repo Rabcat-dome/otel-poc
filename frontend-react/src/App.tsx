@@ -9,7 +9,8 @@ import "./App.css";
 
 function fetchAPI() {
   // param is a highlighted word from the user before it clicked the button
-  return fetch("http://localhost:3001/Tele")
+  //return fetch("http://localhost:3001/Tele")
+  return fetch("http://host.docker.internal:8000/api1/Tele")
   .then(result => {
     return result.json();
   })

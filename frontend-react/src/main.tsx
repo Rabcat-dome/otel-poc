@@ -6,25 +6,26 @@ import './index.css'
 
 import { registerInstrumentations } from '@opentelemetry/instrumentation';
 import { FetchInstrumentation } from '@opentelemetry/instrumentation-fetch';
-import { BatchSpanProcessor, TracerConfig, WebTracerProvider,SimpleSpanProcessor } from '@opentelemetry/sdk-trace-web';
+import { BatchSpanProcessor, TracerConfig, WebTracerProvider } from '@opentelemetry/sdk-trace-web';
 import { ZoneContextManager } from '@opentelemetry/context-zone';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-proto';
 import { SemanticResourceAttributes } from '@opentelemetry/semantic-conventions';
-import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
+//import { HttpInstrumentation } from '@opentelemetry/instrumentation-http';
 
 const collectorOptions = {
   url: 'http://host.docker.internal:4318/v1/traces', // <-- nginx with reverse proxy to http://localhost:4318/
 };
 
-const collectorExporter = new OTLPTraceExporter({
+// const collectorExporter = new OTLPTraceExporter({
 
-  headers: {}
+//   headers: {}
 
-});
+// });
 
 const providerConfig: TracerConfig = {
   resource: new Resource({
     [SemanticResourceAttributes.SERVICE_NAME]: 'frontend-react',
+    [SemanticResourceAttributes.SERVICE_VERSION]: '1.0.0',
   }),
 };
 
@@ -34,7 +35,7 @@ provider.addSpanProcessor(
 );
 //provider.addSpanProcessor(new SimpleSpanProcessor(new ConsoleSpanExporter()));
 //provider.addSpanProcessor(new SimpleSpanProcessor(collectorExporter));
-provider.addSpanProcessor(new SimpleSpanProcessor(collectorExporter));
+//provider.addSpanProcessor(new SimpleSpanProcessor(collectorExporter));
 provider.register({
   contextManager: new ZoneContextManager(),
 });
@@ -47,7 +48,7 @@ registerInstrumentations({
     // getWebAutoInstrumentations initializes all the package.
 	// it's possible to configure each instrumentation if needed.
   fetchInstrumentation,
-  new HttpInstrumentation(),
+  // new HttpInstrumentation(),
   ],
   tracerProvider: provider
 });
